@@ -108,6 +108,7 @@
     _maskColor = kDefaultMaskColor;
 
     _tapRemoveGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapRemoveGestureHandler)];
+    _tapRemoveGesture.cancelsTouchesInView = self.cancelsTouchInContainerView;
     _swipeRemoveGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRemoveGestureHandler)];
 }
 

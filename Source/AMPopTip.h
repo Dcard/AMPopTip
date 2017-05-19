@@ -495,4 +495,10 @@ NS_ASSUME_NONNULL_END
  */
 @property(nullable, nonatomic, strong, readonly) UIView *backgroundMask;
 
+/** Cancel touch in container view
+ *
+ * Determines if gesture blocks touch in view containing the poptop until poptip is dismissed.
+ */
+@property(nonatomic, assign) BOOL cancelsTouchInContainerView;
+
 @end
