@@ -31,6 +31,7 @@
 @property (nonatomic, assign) CGFloat maxWidth;
 @property (nonatomic, strong) UIView *customView;
 @property (nonatomic, strong, readwrite) UIView *backgroundMask;
+@property (nonatomic, assign) CGRect desiredDismissFrame;
 
 @end
 
@@ -106,9 +107,8 @@
     _bubbleOffset = kDefaultBubbleOffset;
     _shouldShowMask = NO;
     _maskColor = kDefaultMaskColor;
-
+    
     _tapRemoveGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapRemoveGestureHandler)];
-    _tapRemoveGesture.cancelsTouchesInView = self.cancelsTouchInContainerView;
     _swipeRemoveGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRemoveGestureHandler)];
 }
 
@@ -127,7 +127,7 @@
     if (self.direction == AMPopTipDirectionRight) {
         self.maxWidth = MIN(self.maxWidth, self.containerView.bounds.size.width - self.fromFrame.origin.x - self.fromFrame.size.width - self.padding * 2 - self.edgeInsets.left - self.edgeInsets.right - self.arrowSize.width);
     }
-
+    
     if (self.text != nil) {
         self.textBounds = [self.text boundingRectWithSize:(CGSize){self.maxWidth, DBL_MAX }
                                                   options:NSStringDrawingUsesLineFragmentOrigin
@@ -140,15 +140,15 @@
     } else if (self.customView != nil) {
         self.textBounds = self.customView.frame;
     }
-
+    
     _textBounds.origin = (CGPoint){self.padding + self.edgeInsets.left, self.padding + self.edgeInsets.top};
-
+    
     CGRect frame = CGRectZero;
     float offset = self.offset * ((self.direction == AMPopTipDirectionUp || self.direction == AMPopTipDirectionLeft || self.direction == AMPopTipDirectionNone) ? -1 : 1);
-
+    
     if (self.direction == AMPopTipDirectionUp || self.direction == AMPopTipDirectionDown) {
         frame.size = (CGSize){self.textBounds.size.width + self.padding * 2.0 + self.edgeInsets.left + self.edgeInsets.right, self.textBounds.size.height + self.padding * 2.0 + self.edgeInsets.top + self.edgeInsets.bottom + self.arrowSize.height};
-
+        
         CGFloat x = self.fromFrame.origin.x + self.fromFrame.size.width / 2 - frame.size.width / 2;
         if (x < 0) { x = self.edgeMargin; }
         if (x + frame.size.width > self.containerView.bounds.size.width) { x = self.containerView.bounds.size.width - frame.size.width - self.edgeMargin; }
@@ -157,7 +157,7 @@
         } else {
             frame.origin = (CGPoint){ x, self.fromFrame.origin.y - frame.size.height};
         }
-
+        
         frame.origin.y += offset;
         
         // Make sure that the bubble doesn't leaves the boundaries of the view
@@ -183,10 +183,10 @@
         }
         
         frame.origin.x += self.bubbleOffset;
-
+        
     } else if (self.direction == AMPopTipDirectionLeft || self.direction == AMPopTipDirectionRight) {
         frame.size = (CGSize){ self.textBounds.size.width + self.padding * 2.0 + self.edgeInsets.left + self.edgeInsets.right + self.arrowSize.height, self.textBounds.size.height + self.padding * 2.0 + self.edgeInsets.top + self.edgeInsets.bottom};
-
+        
         CGFloat x = 0;
         if (self.direction == AMPopTipDirectionLeft) {
             x = self.fromFrame.origin.x - frame.size.width;
@@ -194,11 +194,11 @@
         if (self.direction == AMPopTipDirectionRight) {
             x = self.fromFrame.origin.x + self.fromFrame.size.width;
         }
-
+        
         x += offset;
-
+        
         CGFloat y = self.fromFrame.origin.y + self.fromFrame.size.height / 2 - frame.size.height / 2;
-
+        
         if (y < 0) { y = self.edgeMargin; }
         if (y + frame.size.height > self.containerView.bounds.size.height) { y = self.containerView.bounds.size.height - frame.size.height - self.edgeMargin; }
         frame.origin = (CGPoint){ x, y };
@@ -230,9 +230,9 @@
         frame.size = (CGSize){ self.textBounds.size.width + self.padding * 2.0 + self.edgeInsets.left + self.edgeInsets.right, self.textBounds.size.height + self.padding * 2.0 + self.edgeInsets.top + self.edgeInsets.bottom };
         frame.origin = (CGPoint){ CGRectGetMidX(self.fromFrame) - frame.size.width / 2, CGRectGetMidY(self.fromFrame) - frame.size.height / 2 + offset };
     }
-
+    
     frame.size = (CGSize){ frame.size.width + self.borderWidth * 2, frame.size.height + self.borderWidth * 2 };
-
+    
     switch (self.direction) {
         case AMPopTipDirectionNone: {
             self.arrowPosition = CGPointZero;
@@ -249,7 +249,7 @@
             _textBounds.origin = (CGPoint){ self.textBounds.origin.x, self.textBounds.origin.y + self.arrowSize.height };
             self.layer.anchorPoint = (CGPoint){ anchor, 0 };
             self.layer.position = (CGPoint){ self.layer.position.x + frame.size.width * anchor, self.layer.position.y - frame.size.height / 2 };
-
+            
             break;
         }
         case AMPopTipDirectionUp: {
@@ -260,7 +260,7 @@
             CGFloat anchor = self.arrowPosition.x / frame.size.width;
             self.layer.anchorPoint = (CGPoint){ anchor, 1 };
             self.layer.position = (CGPoint){ self.layer.position.x + frame.size.width * anchor, self.layer.position.y + frame.size.height / 2 };
-
+            
             break;
         }
         case AMPopTipDirectionLeft: {
@@ -271,7 +271,7 @@
             CGFloat anchor = self.arrowPosition.y / frame.size.height;
             self.layer.anchorPoint = (CGPoint){ 1, anchor };
             self.layer.position = (CGPoint){ self.layer.position.x - frame.size.width / 2, self.layer.position.y + frame.size.height * anchor };
-
+            
             break;
         }
         case AMPopTipDirectionRight: {
@@ -283,14 +283,14 @@
             CGFloat anchor = self.arrowPosition.y / frame.size.height;
             self.layer.anchorPoint = (CGPoint){ 0, anchor };
             self.layer.position = (CGPoint){ self.layer.position.x + frame.size.width / 2, self.layer.position.y + frame.size.height * anchor };
-
+            
             break;
         }
     }
-
+    
     self.backgroundColor = [UIColor clearColor];
     self.frame = frame;
-
+    
     if (self.customView) {
         self.customView.frame = self.textBounds;
     }
@@ -311,7 +311,12 @@
 }
 
 - (void)tapRemoveGestureHandler {
-    if (self.shouldDismissOnTapOutside) {
+    CGPoint tapPoint = [self.tapRemoveGesture locationInView:self.containerView];
+    if (!CGRectIsNull(self.desiredDismissFrame)) {
+        if (CGRectContainsPoint(self.desiredDismissFrame, tapPoint)) {
+            [self hide];
+        }
+    } else {
         [self hide];
     }
 }
@@ -327,24 +332,24 @@
         BOOL showHorizontally = self.direction == AMPopTipDirectionLeft || self.direction == AMPopTipDirectionRight;
         self.radius = (self.frame.size.height - (showHorizontally ? 0 : self.arrowSize.height)) / 2 ;
     }
-
+    
     UIBezierPath *path = [self pathWithRect:rect direction:self.direction];
-
+    
     [self.popoverColor setFill];
     [path fill];
-
+    
     [self.borderColor setStroke];
     [path setLineWidth:self.borderWidth];
     [path stroke];
-
+    
     self.paragraphStyle.alignment = self.textAlignment;
-
+    
     NSDictionary *titleAttributes = @{
                                       NSParagraphStyleAttributeName: self.paragraphStyle,
                                       NSFontAttributeName: self.font,
                                       NSForegroundColorAttributeName: self.textColor
                                       };
-
+    
     if (self.text != nil) {
         [self.text drawInRect:self.textBounds withAttributes:titleAttributes];
     } else if (self.attributedText != nil) {
@@ -379,7 +384,22 @@
     _fromFrame = frame;
     [self.customView removeFromSuperview];
     self.customView = nil;
+    
+    [self show];
+}
 
+- (void)showText:(nonnull NSString *)text direction:(AMPopTipDirection)direction maxWidth:(CGFloat)maxWidth inView:(nonnull UIView *)view desiredDismissFrame:(CGRect)dismissFrame fromFrame:(CGRect)frame {
+    self.attributedText = nil;
+    self.text = text;
+    self.accessibilityLabel = text;
+    self.direction = direction;
+    self.containerView = view;
+    self.maxWidth = maxWidth;
+    self.desiredDismissFrame = dismissFrame;
+    _fromFrame = frame;
+    [self.customView removeFromSuperview];
+    self.customView = nil;
+    
     [self show];
 }
 
@@ -393,7 +413,7 @@
     _fromFrame = frame;
     [self.customView removeFromSuperview];
     self.customView = nil;
-
+    
     [self show];
 }
 
@@ -408,7 +428,7 @@
     self.customView = customView;
     [self addSubview:self.customView];
     [self.customView layoutIfNeeded];
-
+    
     [self show];
 }
 
@@ -462,13 +482,13 @@
         return;
     }
     [self.layer removeAllAnimations];
-
+    
     self.isAnimating = YES;
     [self.dismissTimer invalidate];
     self.dismissTimer = nil;
     [self.containerView removeGestureRecognizer:self.tapRemoveGesture];
     [self.containerView removeGestureRecognizer:self.swipeRemoveGesture];
-
+    
     void (^completion)() = ^{
         [self.customView removeFromSuperview];
         self.customView = nil;
@@ -482,7 +502,7 @@
             self.dismissHandler();
         }
     };
-
+    
     BOOL isActive = YES;
 #if NS_EXTENSION_UNAVAILABLE_IOS
     UIApplicationState state = [[UIApplication sharedApplication] applicationState];
@@ -524,10 +544,16 @@
     _swipeRemoveGesture.direction = swipeRemoveGestureDirection;
 }
 
+- (void)setCancelsTouchInContainerView:(BOOL)cancelsTouchInContainerView {
+    _cancelsTouchInContainerView = cancelsTouchInContainerView;
+    self.tapRemoveGesture.cancelsTouchesInView = cancelsTouchInContainerView;
+    self.swipeRemoveGesture.cancelsTouchesInView = cancelsTouchInContainerView;
+}
+
 - (void)dealloc {
     [_tapRemoveGesture removeTarget:self action:@selector(tapRemoveGestureHandler)];
     _tapRemoveGesture = nil;
-
+    
     [_swipeRemoveGesture removeTarget:self action:@selector(swipeRemoveGestureHandler)];
     _swipeRemoveGesture = nil;
 }
