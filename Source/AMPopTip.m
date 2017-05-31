@@ -112,8 +112,6 @@
     
     _tapRemoveGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapRemoveGestureHandler)];
     _swipeRemoveGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRemoveGestureHandler)];
-    
-    self.blockingView = [[AMBlockingView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 }
 
 - (BOOL)isVisible {
@@ -299,10 +297,6 @@
         self.customView.frame = self.textBounds;
     }
     
-    self.blockingView.backgroundColor = [UIColor clearColor];
-    self.blockingView.touchingView = self.containerView;
-    [[UIApplication sharedApplication].keyWindow addSubview:self.blockingView];
-    
     self.gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     [self.gestureRecognizer setCancelsTouchesInView:NO];
     [self addGestureRecognizer:self.gestureRecognizer];
@@ -320,7 +314,7 @@
 
 - (void)tapRemoveGestureHandler {
     CGPoint tapPoint = [self.tapRemoveGesture locationInView:self.containerView];
-    if (!CGRectIsNull(self.desiredDismissFrame)) {
+    if (!CGRectIsEmpty(self.desiredDismissFrame)) {
         if (CGRectContainsPoint(self.desiredDismissFrame, tapPoint)) {
             [self hide];
         }
@@ -367,6 +361,15 @@
 
 - (void)show {
     self.isAnimating = YES;
+    
+    if (!CGRectIsEmpty(self.desiredDismissFrame) && self.blockingView == nil) {
+        self.blockingView = [[AMBlockingView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        self.blockingView.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.5f];
+        self.blockingView.touchingView = self.containerView;
+        self.blockingView.allowedTouchRect = self.desiredDismissFrame;
+        [[UIApplication sharedApplication].keyWindow addSubview:self.blockingView];
+    }
+    
     [self setup];
     [self setNeedsLayout];
     [self performEntranceAnimation:^{
