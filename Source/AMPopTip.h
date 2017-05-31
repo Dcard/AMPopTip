@@ -105,6 +105,7 @@ typedef NS_ENUM(NSInteger, AMPopTipActionAnimation) {
  * @param frame The originating frame. The popover's arrow will point to the center of this frame.
  */
 - (void)showText:(nonnull NSString *)text direction:(AMPopTipDirection)direction maxWidth:(CGFloat)maxWidth inView:(nonnull UIView *)view fromFrame:(CGRect)frame;
+- (void)showText:(nonnull NSString *)text direction:(AMPopTipDirection)direction maxWidth:(CGFloat)maxWidth inView:(nonnull UIView *)view desiredDismissFrame:(CGRect)dismissFrame fromFrame:(CGRect)frame;
 
 /** Show the popover
  *

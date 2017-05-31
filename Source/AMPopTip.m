@@ -12,6 +12,7 @@
 #import "AMPopTip+Entrance.h"
 #import "AMPopTip+Exit.h"
 #import "AMPopTip+Animation.h"
+#import "AMBlockingView.h"
 
 @interface AMPopTip()
 
@@ -32,6 +33,7 @@
 @property (nonatomic, strong) UIView *customView;
 @property (nonatomic, strong, readwrite) UIView *backgroundMask;
 @property (nonatomic, assign) CGRect desiredDismissFrame;
+@property (nonatomic, strong) AMBlockingView *blockingView;
 
 @end
 
@@ -110,6 +112,8 @@
     
     _tapRemoveGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapRemoveGestureHandler)];
     _swipeRemoveGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRemoveGestureHandler)];
+    
+    self.blockingView = [[AMBlockingView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 }
 
 - (BOOL)isVisible {
@@ -295,6 +299,10 @@
         self.customView.frame = self.textBounds;
     }
     
+    self.blockingView.backgroundColor = [UIColor clearColor];
+    self.blockingView.touchingView = self.containerView;
+    [[UIApplication sharedApplication].keyWindow addSubview:self.blockingView];
+    
     self.gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     [self.gestureRecognizer setCancelsTouchesInView:NO];
     [self addGestureRecognizer:self.gestureRecognizer];
@@ -396,6 +404,8 @@
     self.containerView = view;
     self.maxWidth = maxWidth;
     self.desiredDismissFrame = dismissFrame;
+    self.blockingView.allowedTouchRect = dismissFrame;
+    
     _fromFrame = frame;
     [self.customView removeFromSuperview];
     self.customView = nil;
@@ -478,6 +488,8 @@
 }
 
 - (void)hideForced:(BOOL)forced {
+    [self.blockingView removeFromSuperview];
+    
     if (!forced && self.isAnimating) {
         return;
     }
