@@ -364,7 +364,7 @@
     
     if (!CGRectIsEmpty(self.desiredDismissFrame) && self.blockingView == nil) {
         self.blockingView = [[AMBlockingView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        self.blockingView.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.5f];
+        self.blockingView.backgroundColor = [UIColor clearColor];
         self.blockingView.touchingView = self.containerView;
         self.blockingView.allowedTouchRect = self.desiredDismissFrame;
         [[UIApplication sharedApplication].keyWindow addSubview:self.blockingView];
