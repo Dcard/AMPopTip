@@ -310,8 +310,8 @@
 }
 
 - (void)tapRemoveGestureHandler {
-    CGPoint tapPoint = [self.tapRemoveGesture locationInView:self.containerView];
     if (!CGRectIsEmpty(self.desiredDismissFrame)) {
+        CGPoint tapPoint = [self.tapRemoveGesture locationInView:nil];
         if (CGRectContainsPoint(self.desiredDismissFrame, tapPoint)) {
             [self hide];
         }
