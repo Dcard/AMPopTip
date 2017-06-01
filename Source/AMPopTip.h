@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AMBlockingView.h"
 
 /**-----------------------------------------------------------------------------
  * @name AMPopTip Options
@@ -495,6 +496,7 @@ NS_ASSUME_NONNULL_END
  * The mask by appears with fade in effect only.
  */
 @property(nullable, nonatomic, strong, readonly) UIView *backgroundMask;
+@property (nonatomic, strong) AMBlockingView *blockingView;
 
 /** Cancel touch in container view
  *

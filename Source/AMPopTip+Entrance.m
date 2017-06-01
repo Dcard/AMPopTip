@@ -89,6 +89,7 @@
     [self.containerView addSubview:self.backgroundMask];
     [self.containerView addSubview:self];
 
+    NSLog(@"Entrance: %@", [UIApplication sharedApplication].keyWindow.subviews);
     [UIView animateWithDuration:self.animationIn delay:self.delayIn usingSpringWithDamping:0.6 initialSpringVelocity:1.5 options:(UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState) animations:^{
         self.transform = CGAffineTransformIdentity;
         self.backgroundMask.alpha = 1.0;

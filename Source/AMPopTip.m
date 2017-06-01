@@ -12,7 +12,6 @@
 #import "AMPopTip+Entrance.h"
 #import "AMPopTip+Exit.h"
 #import "AMPopTip+Animation.h"
-#import "AMBlockingView.h"
 
 @interface AMPopTip()
 
@@ -33,8 +32,6 @@
 @property (nonatomic, strong) UIView *customView;
 @property (nonatomic, strong, readwrite) UIView *backgroundMask;
 @property (nonatomic, assign) CGRect desiredDismissFrame;
-@property (nonatomic, strong) AMBlockingView *blockingView;
-
 @end
 
 @implementation AMPopTip
@@ -363,15 +360,18 @@
     self.isAnimating = YES;
     
     if (!CGRectIsEmpty(self.desiredDismissFrame) && self.blockingView == nil) {
-        self.blockingView = [[AMBlockingView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        self.blockingView.backgroundColor = [UIColor clearColor];
-        self.blockingView.touchingView = self.containerView;
+        CGRect frame = [self.containerView convertRect:self.desiredDismissFrame toView:[UIApplication sharedApplication].keyWindow];
+        self.blockingView = [[AMBlockingView alloc] initWithFrame:[[UIScreen mainScreen] bounds]
+                                                     touchingView:self.containerView
+                                                  backgroundColor:[[UIColor blackColor] colorWithAlphaComponent:0.4f]
+                                              andTransparentRects:@[[NSValue valueWithCGRect:frame]]];
         self.blockingView.allowedTouchRect = self.desiredDismissFrame;
         [[UIApplication sharedApplication].keyWindow addSubview:self.blockingView];
     }
-    
+
     [self setup];
     [self setNeedsLayout];
+    
     [self performEntranceAnimation:^{
         [self.containerView addGestureRecognizer:self.tapRemoveGesture];
         [self.containerView addGestureRecognizer:self.swipeRemoveGesture];
