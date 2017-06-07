@@ -310,14 +310,14 @@
 }
 
 - (void)tapRemoveGestureHandler {
-    if (!CGRectIsEmpty(self.desiredDismissFrame)) {
-        CGPoint tapPoint = [self.tapRemoveGesture locationInView:nil];
-        if (CGRectContainsPoint(self.desiredDismissFrame, tapPoint)) {
-            [self hide];
-        }
-    } else {
+//    if (!CGRectIsEmpty(self.desiredDismissFrame)) {
+//        CGPoint tapPoint = [self.tapRemoveGesture locationInView:nil];
+//        if (CGRectContainsPoint(self.desiredDismissFrame, tapPoint)) {
+//            [self hide];
+//        }
+//    } else {
         [self hide];
-    }
+//    }
 }
 
 - (void)swipeRemoveGestureHandler {
